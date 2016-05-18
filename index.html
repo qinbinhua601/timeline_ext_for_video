@@ -1,0 +1,48 @@
+<html>
+<head>
+  <link href="css/video-js.css" rel="stylesheet">
+
+  <!-- If you'd like to support IE8 -->
+  <script src="js/videojs-ie8.min.js"></script>
+  <link rel="stylesheet" href="css/qin.css">
+  <title>视频互动列表</title>
+</head>
+
+<body>
+    <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
+    poster="images/user-img.jpeg">
+        <source src="media/2.mp4" type='video/mp4'>
+        <source src="media/2.webm" type='video/webm'>
+        <p class="vjs-no-js">
+        To view this video please enable JavaScript, and consider upgrading to a web browser that
+        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+        </p>
+    </video>
+    <div class="control-panel">
+        <span class="current-time-pin"></span>
+    </div>
+    <div class="time-tip"></div>
+    <dl class="act-list">
+        <dt>
+            视频互动列表
+            <span>+</span>
+        </dt>     
+    </dl>
+    
+    
+    <div class="help-layer" style="display: none;">
+        <div class="wrapper">
+            <h2>帮助指南</h2>
+            <ol class="content">
+                <li>右侧时间输入按方向键⬆️⬇️可微调时间加减1s</li>
+                <li>右侧时间输入按住shift并按方向键⬆️⬇️可调整时间加减10s</li>
+                <li>shift + esc可弹出本帮助指南</li>
+            </ol>
+        </div>
+    </div>
+  <script src="js/jquery-1.12.3.js"></script>
+  <script src="js/video.lib.js"></script>
+  
+  <script src="js/index.js"></script>
+</body>
+</html>
