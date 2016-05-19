@@ -29,7 +29,7 @@ var myPlayer = videojs('my-video', {
     var lastCurrentTime = 0;
 
     player.on('loadedmetadata', function () {
-        myCurrentTimeTip.html(secondsToHms(0) + ' / ' + secondsToHms( parseInt(player.duration())));
+        myCurrentTimeTip.html(secondsToHms(0) + ' / ' + secondsToHms(parseInt(player.duration())));
     });
 
     player.on('timeupdate', function () {
@@ -47,22 +47,22 @@ var myPlayer = videojs('my-video', {
         lastCurrentTime = currentTime;
     });
 
-    myControlPanel.on('mousedown', function(e) {
-        if(!addMode) return
+    myControlPanel.on('mousedown', function (e) {
+        if (!addMode) return
         isDragging = true;
         var duration = player.duration();
         startLeft = parseInt((e.clientX - $(this).position().left) / $(this).width() * duration);
-        
-        if($.find('#act-pin-'+ currentActiveListId).length) {
-            myActPin = $('#act-pin-'+ currentActiveListId); 
+
+        if ($.find('#act-pin-' + currentActiveListId).length) {
+            myActPin = $('#act-pin-' + currentActiveListId);
         } else {
-            myActPin = $('<span id="act-pin-'+ currentActiveListId +'" class="act-pin"></span>').appendTo($(this));
+            myActPin = $('<span id="act-pin-' + currentActiveListId + '" class="act-pin"></span>').appendTo($(this));
         }
         // console.log(myActPin);
     });
-    
-    myControlPanel.on('mouseup', function(e) {
-        if(!addMode) return
+
+    myControlPanel.on('mouseup', function (e) {
+        if (!addMode) return
         myActPin.text(currentActiveListId);
         startLeft = 0;
         isDragging = false;
@@ -70,7 +70,7 @@ var myPlayer = videojs('my-video', {
 
     myControlPanel.on('mouseenter', function (e) {
         if (!player.paused()) return
-        if(addMode) {
+        if (addMode) {
             console.log('add mode is on [mouse enter]');
             // myActPin = $('<span class="act-pin"></span>').appendTo($(this));
         } else {
@@ -83,46 +83,46 @@ var myPlayer = videojs('my-video', {
     var lastMoment2 = 0;
     myControlPanel.on('mousemove', function (e) {
         if (!player.paused()) return
-        
+
         if (e.timeStamp - lastTimestamp < 50) {
             lastTimestamp = e.timeStamp;
             return false;
         }
-        if(addMode) {
+        if (addMode) {
             console.log('add mode is on [mouse move]');
-            if(isDragging) {
+            if (isDragging) {
                 var duration = player.duration();
                 console.log('startleft : ' + startLeft);
                 var delta = e.clientX - $(this).position().left;
-                var currentMoment = parseInt(delta / $(this).width() * duration); 
-                
+                var currentMoment = parseInt(delta / $(this).width() * duration);
+
                 console.log('addMode currentMoment : ' + currentMoment);
                 console.log('addMode delta : ' + delta);
-                if(lastMoment2 === currentMoment) {
+                if (lastMoment2 === currentMoment) {
                     return false;
                 }
-                
+
                 lastMoment2 = currentMoment;
-                
+
                 drawRect(myActPin, currentActiveListId, startLeft, currentMoment);
-                
+
                 $('#start-' + currentActiveListId).val(secondsToHms(startLeft > currentMoment ? currentMoment : startLeft));
                 $('#end-' + currentActiveListId).val(secondsToHms(parseInt(currentMoment > startLeft ? currentMoment : startLeft)));
 
                 myCurrentTimeTip.html(secondsToHms(currentMoment) + ' / ' + secondsToHms(parseInt(duration)));
             }
         } else {
-            
+
             var delta = e.clientX - $(this).position().left;
             var duration = player.duration();
-            var currentMoment = parseInt(delta / $(this).width() * duration); 
+            var currentMoment = parseInt(delta / $(this).width() * duration);
             console.log('lastMoment: ' + lastMoment);
             console.log('currentMoment: ' + currentMoment);
-            
-            if(currentMoment === lastMoment) {
+
+            if (currentMoment === lastMoment) {
                 return false;
-            } 
-            
+            }
+
             lastMoment = currentMoment;
             var leftStyle = (currentMoment / duration) * 100;
             myFakePin.css('left', leftStyle + '%');
@@ -133,7 +133,7 @@ var myPlayer = videojs('my-video', {
 
     myControlPanel.on('mouseleave', function (e) {
         if (!player.paused()) return
-        if(addMode) {
+        if (addMode) {
             console.log('add mode is on [mouse leave]');
         } else {
             myFakePin.remove();
@@ -145,9 +145,9 @@ var myPlayer = videojs('my-video', {
 
     myControlPanel.on('click', function (e) {
         if (!player.paused()) return
-        
-        if(addMode) {
-            if(e.target.className === 'act-pin') {
+
+        if (addMode) {
+            if (e.target.className === 'act-pin') {
                 var id = $(e.target).attr('id').split('-').pop();
                 currentActiveListId = id;
                 $('dd.active').removeClass('active');
@@ -161,7 +161,7 @@ var myPlayer = videojs('my-video', {
         }
     });
 
-   
+
     $(document.body).on('keyup', function (e) {
         // if 'ESC' pressed reset the pin to 0
         if (e.shiftKey && e.keyCode === 27) {
@@ -186,7 +186,6 @@ var myPlayer = videojs('my-video', {
         var $node = $(this);
         if ($node.hasClass('del')) {
             removeFromList($node.parent());
-            // $node.parent().remove();
         } else if ($node.hasClass('confirm')) {
             updateList($node.parent());
             $node.attr('class', 'del').text('del');
@@ -210,7 +209,7 @@ var myPlayer = videojs('my-video', {
         } else {
             $(this).trigger('input');
         }
-        
+
         updateInput();
 
     });
@@ -225,13 +224,13 @@ var myPlayer = videojs('my-video', {
     });
 
 
-    $('dl.act-list').on('click', 'dd', function(e) {    
-        if(e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
+    $('dl.act-list').on('click', 'dd', function (e) {
+        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
             return;
-        }    
+        }
 
-        currentActiveListId = $(this).attr('class').split('-')[1];        
-        if($(this).hasClass('active')) {
+        currentActiveListId = $(this).attr('class').split('-')[1];
+        if ($(this).hasClass('active')) {
             addMode = false;
             $(this).removeClass('active');
         } else {
@@ -239,7 +238,7 @@ var myPlayer = videojs('my-video', {
             $('dd.active').removeClass('active');
             $(this).addClass('active');
         }
-        
+
         console.log(addMode);
     });
 
@@ -260,8 +259,8 @@ var myPlayer = videojs('my-video', {
     }
 
     function addItem(id) {
-        var html = '<dd id="item-'+ id +'" class="active item-' + id + '"><div class="input"><label for="title-' + id + '">活动编号:</label><input type="text" id="title-' + id + '" value="' + id + '"></div><div class="input"> 从 <input class="time" id="start-' + id + '"type="text" value=""> 到 <input class="time" id="end-' + id + '" type="text" value=""></div><button class="confirm">confirm</button></dd>';
-        
+        var html = '<dd id="item-' + id + '" class="active item-' + id + '"><div class="input"><label for="title-' + id + '">活动编号:</label><input type="text" id="title-' + id + '" value="' + id + '"></div><div class="input"> 从 <input class="time" id="start-' + id + '"type="text" value=""> 到 <input class="time" id="end-' + id + '" type="text" value=""></div><button class="confirm">confirm</button></dd>';
+
         addList.push({
             id: id,
             title: '',
@@ -280,14 +279,14 @@ var myPlayer = videojs('my-video', {
         var startTime = node.find('#start-' + id).val();
         var endTime = node.find('#end-' + id).val();
 
-        addList = $.map(addList, function(item ,index) {
-            if(item.id == id) {
+        addList = $.map(addList, function (item, index) {
+            if (item.id == id) {
                 return {
                     id: +id,
                     title: title,
                     startTime: hmsToSeconds(startTime),
                     endTime: hmsToSeconds(endTime)
-                }; 
+                };
             } else {
                 return item;
             }
@@ -303,31 +302,31 @@ var myPlayer = videojs('my-video', {
         addList = $.grep(addList, function (item, index) { return item.id != id; });
         $('#act-pin-' + id).remove();
         node.remove();
+        addMode = $.find('.act-list dd.active').length;
         console.log('[remove item from the list] : ');
         console.log(addList);
-        currentActiveListId = 0;
     }
-    
+
     function drawRect(dom, id, start, end) {
-    
-        console.log(arguments)        
+
+        console.log(arguments)
 
         var leftStyle;
-        var duration = player.duration(); 
+        var duration = player.duration();
         var $node = dom || $('#act-pin-' + id);
 
-        if(end > start) {
+        if (end > start) {
             leftStyle = start / duration * 100;
         } else {
             leftStyle = end / duration * 100;
         }
-        
+
         $node.css({
             left: leftStyle + '%',
             width: (Math.abs(end - start) / duration * myControlPanel.width()) + 'px'
         })
     }
-    
+
     function updateInput() {
         var start = hmsToSeconds($('#start-' + currentActiveListId).val());
         var end = hmsToSeconds($('#end-' + currentActiveListId).val());
@@ -335,13 +334,13 @@ var myPlayer = videojs('my-video', {
         console.log(start);
         drawRect(null, currentActiveListId, start, end);
     }
-    
+
     function getMaxId() {
-        if(addList.length) {
-            return Math.max.apply(null, $.map(addList, function(item, index){return Number(item.id)}));
+        if (addList.length) {
+            return Math.max.apply(null, $.map(addList, function (item, index) { return Number(item.id) }));
         } else {
             return 0;
         }
-    } 
+    }
 
 });
