@@ -1,6 +1,8 @@
 *
     box-sizing: border-box
-
+.intv-video
+    position: relative
+    width: 880px
 .help-layer
     position: absolute
     display: flex
@@ -65,14 +67,14 @@
     line-height: 30px
     text-align: center
 #product-info
-    width: 400px
-    border: 1px solid #ccc
+    width: 200px
     position: absolute
     top: 0
-    right: 0
+    right: 20px
     button
         padding: 10px
         border: 0
+        cursor: pointer
         &.back, &.add
             color: #808080
             background-color: #f3f3f5
@@ -92,7 +94,44 @@
                 font-size: 14px
                 line-height: 24px
     & > div
-        padding: 10px 0 0 0
-        border-bottom: 1px solid #ccc
+        width: 100%
+        padding: 10px 0 10px 0  
 #product-list
     margin-top: 10px
+    width: 100%
+    font-size: 14px
+    thead
+        background-color: #333333
+        color: white
+        tr
+            td
+                text-align: center
+    tbody
+        tr
+            td
+                border: none
+                &:first-child        
+                    text-align: center
+                &:nth-of-type(2)
+                    max-width: 200px
+                    word-break: break-all
+                button
+                    border: 0
+                    outline: 0
+                    background: none
+                    cursor: pointer
+                    &.update
+                        color: #008be8
+                    &.delete
+                        color: #999999
+                span
+                    &:before
+                        content: '¥'
+                    &.now-price
+                        font-size: 18px
+                        font-weight: bolder
+                    &.original-price
+                        text-decoration: line-through
+                        color: #b3b3b3
+                        font-size: 14px
+                    

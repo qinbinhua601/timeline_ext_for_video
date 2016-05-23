@@ -9,75 +9,77 @@
 </head>
 
 <body>
-    <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
-    poster="images/user-img.jpeg">
-        <source src="media/2.mp4" type='video/mp4'>
-        <source src="media/2.webm" type='video/webm'>
-        <source src="" type="">
-        https://test-intv-vod-output.oss-cn-hangzhou.aliyuncs.com/output/m3u/74431363b2214049bdc2b1056689c2b8/Robotica_720.m3u8
-        <p class="vjs-no-js">
-        To view this video please enable JavaScript, and consider upgrading to a web browser that
-        <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
-        </p>
-    </video>
-    <div class="control-panel">
-        <span class="current-time-pin"></span>
-    </div>
-    <div class="time-tip"></div>
     
-    <div class="help-layer" style="display: none;">
-        <div class="wrapper">
-            <h2>帮助指南</h2>
-            <ol class="content">
-                <li>右侧时间输入按方向键⬆️⬇️可微调时间加减1s</li>
-                <li>右侧时间输入按住shift并按方向键⬆️⬇️可调整时间加减10s</li>
-                <li>shift + esc可弹出本帮助指南</li>
-            </ol>
+    <div class="intv-video">
+        <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
+        poster="images/user-img.jpeg">
+            <source src="media/2.mp4" type='video/mp4'>
+            <source src="media/2.webm" type='video/webm'>
+            <source src="" type="">
+            https://test-intv-vod-output.oss-cn-hangzhou.aliyuncs.com/output/m3u/74431363b2214049bdc2b1056689c2b8/Robotica_720.m3u8
+            <p class="vjs-no-js">
+            To view this video please enable JavaScript, and consider upgrading to a web browser that
+            <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
+            </p>
+        </video>
+        <div class="control-panel">
+            <span class="current-time-pin"></span>
         </div>
-    </div>
-
-
-    <table id="product-list" border="1" cellpadding="5" cellspacing="0">
-        <thead>
-            <tr>
-                <td>序号</td>
-                <td>商品名称</td>
-                <td>商品照片</td>
-                <td>开始时间</td>
-                <td>结束时间</td>
-                <td>销售价/原价</td>
-                <td>操作</td>
-            </tr>
-        </thead>
+        <div class="time-tip"></div>
         
-        <tbody>
+        <div class="help-layer" style="display: none;">
+            <div class="wrapper">
+                <h2>帮助指南</h2>
+                <ol class="content">
+                    <li>右侧时间输入按方向键⬆️⬇️可微调时间加减1s</li>
+                    <li>右侧时间输入按住shift并按方向键⬆️⬇️可调整时间加减10s</li>
+                    <li>shift + esc可弹出本帮助指南</li>
+                </ol>
+            </div>
+        </div>
+
+
+        <table id="product-list" border="1" cellpadding="5" cellspacing="0">
+            <thead>
+                <tr>
+                    <td>序号</td>
+                    <td>商品名称</td>
+                    <td>商品照片</td>
+                    <td>开始时间</td>
+                    <td>结束时间</td>
+                    <td>销售价/原价</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
             
-        </tbody>
-    </table>
-    
-    <div id="product-info">
-        <div>
-            <button class="add"><span>+</span>添加商品</button>
-        </div>
-        <div class="time-range">
-            <div class="start">
-                <span>开始时间：</span>
-                <input type="text" class="time">
+            <tbody>
+                
+            </tbody>
+        </table>
+        
+        <div id="product-info">
+            <div>
+                <button class="add"><span>+</span>添加商品</button>
             </div>
-            <div class="end">
-                <span>结束时间：</span>
-                <input type="text" class="time">
+            <div class="time-range">
+                <div class="start">
+                    <span>开始时间：</span>
+                    <input type="text" class="time">
+                </div>
+                <div class="end">
+                    <span>结束时间：</span>
+                    <input type="text" class="time">
+                </div>
             </div>
-        </div>
-        <div>
-            <button class="save">保存</button>
-            <button class="back">返回</button>
-        </div>
-        <div>
-            <button class="preview">预览</button>
+            <div>
+                <button class="save">保存</button>
+                <button class="back">返回</button>
+            </div>
+            <div>
+                <button class="preview">预览</button>
+            </div>
         </div>
     </div>
-
   <script src="js/jquery-1.12.3.js"></script>
   <script src="js/video.lib.js"></script>
   
