@@ -19,6 +19,8 @@ var myPlayer = videojs('my-video', {
         myControlPanel = $('.control-panel'),
         myPin = myControlPanel.find('span.current-time-pin'),
         myCurrentTimeTip = $('.time-tip'),
+        myProductList = $('#product-list > tbody'),
+        myProductInfo = $('#product-info')
 
         lastCurrentTime = 0,
         lastTimestamp = 0,
@@ -59,11 +61,13 @@ var myPlayer = videojs('my-video', {
         isDragging = true;
 
         startLeft = parseInt((e.clientX - myControlPanel.position().left) / myControlPanel.width() * duration);
-
+        
+        
         if ($.find('#act-pin-' + currentActiveListId).length) {
             myActPin = $('#act-pin-' + currentActiveListId);
         } else {
-            myActPin = $('<span id="act-pin-' + currentActiveListId + '" class="act-pin"></span>').appendTo(myControlPanel);
+            $('span.act-pin.active').removeClass('active');
+            myActPin = $('<span id="act-pin-' + currentActiveListId + '" class="act-pin active"></span>').appendTo(myControlPanel);
         }
 
     });
@@ -114,8 +118,8 @@ var myPlayer = videojs('my-video', {
 
                 drawRect(myActPin, currentActiveListId, startLeft, currentMoment);
 
-                $('#start-' + currentActiveListId).val(secondsToHms(startLeft > currentMoment ? currentMoment : startLeft));
-                $('#end-' + currentActiveListId).val(secondsToHms(parseInt(currentMoment > startLeft ? currentMoment : startLeft)));
+                myProductInfo.find('.start > input.time').val(secondsToHms(startLeft > currentMoment ? currentMoment : startLeft));
+                myProductInfo.find('.end > input.time').val(secondsToHms(parseInt(currentMoment > startLeft ? currentMoment : startLeft)));
 
                 myCurrentTimeTip.html(formatTimeTip(currentMoment, duration));
 
@@ -155,24 +159,15 @@ var myPlayer = videojs('my-video', {
 
         if (!player.paused()) return
 
-        if (addMode) {
-            if (e.target.className === 'act-pin') {
-                var id = $(e.target).attr('id').split('-').pop();
-                currentActiveListId = id;
-                $('dd.active').removeClass('active');
-                $('dd#item-' + id).addClass('active');
-            }
-        } else {
+        if (!addMode) {
             myPin.attr('style', myFakePin.attr('style'));
             player.currentTime(myPin[0].style.left.replace('%', '') * duration / 100);
         }
 
     });
-
-
+    
     $(document.body).on('keyup', function (e) {
 
-        
         if (e.shiftKey && e.keyCode === 27) { // SHIFT + ESC
             $('.help-layer').toggle();
         } else if (e.keyCode === 27) { // if 'ESC' pressed reset the pin to 0
@@ -182,30 +177,23 @@ var myPlayer = videojs('my-video', {
 
     });
 
-    $('dl.act-list dt span').on('click', function () {
-
+    // 添加新商品
+    myProductInfo.on('click', 'button.add', function() {
+        
         var id = getMaxId() + 1;
-
         currentActiveListId = id;
         addItem(id);
         addMode = true;
-
     });
 
-    $('dl.act-list').on('click', 'dd > button', function (e) {
-
+    // 保存当前编辑商品
+    myProductInfo.on('click', 'button.save', function(e) {
         var $node = $(this);
-
-        if ($node.hasClass('del')) {
-            removeFromList($node.parent());
-        } else if ($node.hasClass('confirm')) {
-            updateList($node.parent());
-            $node.attr('class', 'del').text('del');
-        }
-
+        updateList($node.parent());
     });
-
-    $('dl.act-list').on('keydown', 'input.time', function (e) {
+    
+    // 按键调整输入标签的值
+    myProductInfo.on('keydown', 'input.time', function (e) {
         
         var $inputNode = $(this),
             count = hmsToSeconds($inputNode.val()),
@@ -227,7 +215,8 @@ var myPlayer = videojs('my-video', {
 
     });
 
-    $('dl.act-list').on('blur', 'input.time', function () {
+    // 失去焦点的时候调整输入标签的值
+    myProductInfo.on('blur', 'input.time', function () {
 
         var $inputNode = $(this),
             val = $(this).val();
@@ -240,27 +229,24 @@ var myPlayer = videojs('my-video', {
 
     });
 
+    // 更新当前添加的商品列表项
+    $('#product-list').on('click', 'tbody > tr button', function(e) {
+        
+        var id = $(e.target).data('activeId');
 
-    $('dl.act-list').on('click', 'dd', function (e) {
-
-        if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT') {
-            return;
-        }
-
-        var $node = $(this); 
-
-        currentActiveListId = $node.attr('class').split('-')[1];
-        if ($node.hasClass('active')) {
-            addMode = false;
-            $node.removeClass('active');
+        if(e.target.className === 'delete') {
+            removeFromList(id);
         } else {
+            currentActiveListId = id;
             addMode = true;
-            $('dd.active').removeClass('active');
-            $node.addClass('active');
+            $('span.act-pin.active').removeClass('active');
+            $('#act-pin-' + currentActiveListId).addClass('active');
+            var item = getListItemById(currentActiveListId);
+            myProductInfo.find('.start > input.time').val(secondsToHms(item.startTime));
+            myProductInfo.find('.end > input.time').val(secondsToHms(item.endTime));
         }
-
-        console.log(addMode);
-
+        
+        
     });
 
     function secondsToHms(d) {
@@ -284,39 +270,33 @@ var myPlayer = videojs('my-video', {
     }
 
     function addItem(id) {
-
-        var html = '<dd id="item-' + id + '" class="active item-' + id + '"><div class="input"><label for="title-' + id + '">活动编号:</label><input type="text" id="title-' + id + '" value="' + id + '"></div><div class="input"> 从 <input class="time" id="start-' + id + '"type="text" value=""> 到 <input class="time" id="end-' + id + '" type="text" value=""></div><button class="confirm">confirm</button></dd>';
-
+        
         addList.push({
             id: id,
-            title: '',
             startTime: '',
-            endTime: ''
+            endTime: '',
         })
 
         log('[add item] : ', addList);
 
-        $('.act-list dd.active').removeClass('active');
-        $('.act-list').append(html);
+        myProductInfo.find('.start > input.time').val('')
+        myProductInfo.find('.end > input.time').val('')
 
     }
 
-    function updateList(node) {
+    function updateList() {
 
-        var id = node.attr('id').split('-').pop();
-        var title = $('#title-' + id).val();
-        var startTime = $('#start-' + id).val();
-        var endTime = $('#end-' + id).val();
-
-
+        var id = currentActiveListId;
+        var startTime = myProductInfo.find('.start > input.time').val();
+        var endTime = myProductInfo.find('.end > input.time').val();
+        
         // update the 
         addList = $.map(addList, function (item, index) {
             if (item.id == id) {
                 return {
                     id: +id,
-                    title: title,
                     startTime: hmsToSeconds(startTime),
-                    endTime: hmsToSeconds(endTime)
+                    endTime: hmsToSeconds(endTime),
                 };
             } else {
                 return item;
@@ -326,12 +306,13 @@ var myPlayer = videojs('my-video', {
         log('[add item to the list] : ', addList);
 
         addMode = false;
+        
+        updateProductList();
 
     }
 
-    function removeFromList(node) {
+    function removeFromList(id) {
 
-        var id = node.attr('id').split('-').pop();
         var $actPinNode = $('#act-pin-' + id);
 
         // remove item from the addList by id
@@ -339,13 +320,10 @@ var myPlayer = videojs('my-video', {
 
         // remove the node in .control-panel
         $actPinNode.remove();
-        // remove the node in .act-list 
-        node.remove();
-
-        // re-adjust the var addMode
-        addMode = $.find('.act-list dd.active').length;
 
         log('[remove item from the list] : ', addList);
+        
+        updateProductList();
 
     }
 
@@ -368,14 +346,14 @@ var myPlayer = videojs('my-video', {
     }
 
     function updateInput() {
-        var start = hmsToSeconds($('#start-' + currentActiveListId).val());
-        var end = hmsToSeconds($('#end-' + currentActiveListId).val());
+        var start = hmsToSeconds(myProductInfo.find('.start > input.time').val());
+        var end = hmsToSeconds(myProductInfo.find('.end > input.time').val());
 
         drawRect(null, currentActiveListId, start, end);
     }
 
     function getMaxId() {
-        return addList.length ? (Math.max.apply(null, $.map(addList, function (item, index) { return Number(item.id) }))) : 0
+        return addList.length ? (Math.max.apply(null, $.map(addList, function (item, index) { return Number(item.id) }))) : 0;
     }
 
     function formatTimeTip(now, overall) {
@@ -386,6 +364,25 @@ var myPlayer = videojs('my-video', {
         console.log(msg);
         console && console.table && console.table(list);
     }
+    
+    function updateProductList() {
+        var html = '';
 
+        for(var i = 0; i < addList.length; i++) {
+            var d = addList[i];
+            if(d.id) {
+                html += '<tr>'+ [d.id, d.id, '<img src="images/user-img.jpeg" height="30" width="30">', secondsToHms(d.startTime), secondsToHms(d.endTime), d.id * 100,  '<button class="update" data-active-id="'+ d.id +'">修改</button><button class="delete" data-active-id="'+ d.id +'">删除</button>'].map(function(item, index){return '<td>'+ item +'</td>'}).join() +'</tr>';  
+            }
+        }
+
+        myProductList.html(html);
+    }
+
+    function getListItemById(id) {
+        var result = addList.filter(function(item) {
+            return item.id == id
+        });
+
+        return result.length ? result[0] : false
+    }
 });
-

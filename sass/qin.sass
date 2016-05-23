@@ -41,6 +41,7 @@
     width: 640px
     height: 120px
     border: 1px solid #ccc
+    background-color: #535356
     span
         position: absolute
         display: block
@@ -51,63 +52,47 @@
             background-color: crimson
             z-index: 1
         &.act-pin
-            background-color: rgba(255,69,0,.2)
             background-color: antiquewhite
             width: 2px
             text-align: center
             line-height: 120px
+            &.active 
+                background-color: yellowgreen
 .time-tip
     margin-top: 10px
     width: 640px
     border: 1px solid #ccc
     line-height: 30px
     text-align: center
-
-dl.act-list
-    margin: 0
-    padding: 0
-    position: absolute
-    right: 8px
-    top: 8px
-    width: 300px
-    min-height: 600px
+#product-info
+    width: 400px
     border: 1px solid #ccc
-    dd
-        margin: 0
-        padding: 5px
-        min-height: 90px
-        border: 1px solid royalblue
-        transition: margin .3s linear
-        &.active
-            border: 2px dashed red
-            margin: 10px 0
-        .input
-            line-height: 30px
-            &:nth-of-type(2)
-                input
-                    width: 80px     
-        button, input
-            display: inline-block
-        button
-            outline: 0
-            border: 0
-            padding: 5px 10px
-            background-color: dodgerblue
-            color: #fff
-            &:hover
-                cursor: pointer
-    dt
-        position: relative
-        text-align: center
-        line-height: 40px
-        span
-            display: inline-block
-            float: right
-            line-height: 40px
-            width: 40px              
-            border: 1px solid red
-            transition: all .3s
-            &:hover
-                cursor: pointer
-                font-size: 200%
-                
+    position: absolute
+    top: 0
+    right: 0
+    button
+        padding: 10px
+        border: 0
+        &.back, &.add
+            color: #808080
+            background-color: #f3f3f5
+        &.preview, &.save
+            color: white
+            background-color: #35aeff
+        &.preview
+            width: 100%
+        &.save
+            clear: left
+    .time-range
+        overflow: hidden
+        & > div
+            float: left
+            width: 50%
+            span
+                font-size: 14px
+                line-height: 24px
+    & > div
+        padding: 10px 0 0 0
+        border-bottom: 1px solid #ccc
+#product-list
+    margin-top: 10px

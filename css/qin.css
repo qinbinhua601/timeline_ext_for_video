@@ -45,7 +45,8 @@
   margin-top: 10px;
   width: 640px;
   height: 120px;
-  border: 1px solid #ccc; }
+  border: 1px solid #ccc;
+  background-color: #535356; }
   .control-panel span {
     position: absolute;
     display: block;
@@ -56,11 +57,12 @@
       background-color: crimson;
       z-index: 1; }
     .control-panel span.act-pin {
-      background-color: rgba(255, 69, 0, 0.2);
       background-color: antiquewhite;
       width: 2px;
       text-align: center;
       line-height: 120px; }
+      .control-panel span.act-pin.active {
+        background-color: yellowgreen; }
 
 .time-tip {
   margin-top: 10px;
@@ -69,51 +71,36 @@
   line-height: 30px;
   text-align: center; }
 
-dl.act-list {
-  margin: 0;
-  padding: 0;
+#product-info {
+  width: 400px;
+  border: 1px solid #ccc;
   position: absolute;
-  right: 8px;
-  top: 8px;
-  width: 300px;
-  min-height: 600px;
-  border: 1px solid #ccc; }
-  dl.act-list dd {
-    margin: 0;
-    padding: 5px;
-    min-height: 90px;
-    border: 1px solid royalblue;
-    -webkit-transition: margin .3s linear;
-    transition: margin .3s linear; }
-    dl.act-list dd.active {
-      border: 2px dashed red;
-      margin: 10px 0; }
-    dl.act-list dd .input {
-      line-height: 30px; }
-      dl.act-list dd .input:nth-of-type(2) input {
-        width: 80px; }
-    dl.act-list dd button, dl.act-list dd input {
-      display: inline-block; }
-    dl.act-list dd button {
-      outline: 0;
-      border: 0;
-      padding: 5px 10px;
-      background-color: dodgerblue;
-      color: #fff; }
-      dl.act-list dd button:hover {
-        cursor: pointer; }
-  dl.act-list dt {
-    position: relative;
-    text-align: center;
-    line-height: 40px; }
-    dl.act-list dt span {
-      display: inline-block;
-      float: right;
-      line-height: 40px;
-      width: 40px;
-      border: 1px solid red;
-      -webkit-transition: all .3s;
-      transition: all .3s; }
-      dl.act-list dt span:hover {
-        cursor: pointer;
-        font-size: 200%; }
+  top: 0;
+  right: 0; }
+  #product-info button {
+    padding: 10px;
+    border: 0; }
+    #product-info button.back, #product-info button.add {
+      color: #808080;
+      background-color: #f3f3f5; }
+    #product-info button.preview, #product-info button.save {
+      color: white;
+      background-color: #35aeff; }
+    #product-info button.preview {
+      width: 100%; }
+    #product-info button.save {
+      clear: left; }
+  #product-info .time-range {
+    overflow: hidden; }
+    #product-info .time-range > div {
+      float: left;
+      width: 50%; }
+      #product-info .time-range > div span {
+        font-size: 14px;
+        line-height: 24px; }
+  #product-info > div {
+    padding: 10px 0 0 0;
+    border-bottom: 1px solid #ccc; }
+
+#product-list {
+  margin-top: 10px; }
