@@ -100,12 +100,32 @@
     #product-info .time-range > div {
       float: left;
       width: 50%; }
-      #product-info .time-range > div span {
+      #product-info .time-range > div > span {
         font-size: 14px;
         line-height: 24px; }
+      #product-info .time-range > div .input-time {
+        position: relative;
+        height: 22px;
+        line-height: 22px; }
+        #product-info .time-range > div .input-time > span {
+          position: absolute;
+          display: block;
+          right: 2%;
+          width: 10%;
+          text-align: center;
+          height: 10px;
+          line-height: 10px;
+          outline: 1px solid #ccc; }
+          #product-info .time-range > div .input-time > span.plus {
+            top: 0; }
+          #product-info .time-range > div .input-time > span.minus {
+            bottom: 0; }
+        #product-info .time-range > div .input-time input {
+          width: 88%;
+          height: 100%; }
   #product-info > div {
     width: 100%;
-    padding: 10px 0 10px 0; }
+    padding: 5px 0; }
 
 #product-list {
   margin-top: 10px;
@@ -117,12 +137,14 @@
     #product-list thead tr td {
       text-align: center; }
   #product-list tbody tr td {
-    border: none; }
+    border: none;
+    text-align: center; }
     #product-list tbody tr td:first-child {
       text-align: center; }
     #product-list tbody tr td:nth-of-type(2) {
       max-width: 200px;
-      word-break: break-all; }
+      word-break: break-all;
+      text-align: left; }
     #product-list tbody tr td button {
       border: 0;
       outline: 0;

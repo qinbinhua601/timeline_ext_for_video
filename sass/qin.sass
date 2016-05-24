@@ -90,12 +90,32 @@
         & > div
             float: left
             width: 50%
-            span
+            & > span
                 font-size: 14px
                 line-height: 24px
+            .input-time
+                position: relative
+                height: 22px
+                line-height: 22px
+                & > span
+                    position: absolute
+                    display: block
+                    right: 2%
+                    width: 10%
+                    text-align: center
+                    height: 10px
+                    line-height: 10px
+                    outline: 1px solid #ccc
+                    &.plus
+                        top: 0
+                    &.minus
+                        bottom: 0
+                input
+                    width: 88%
+                    height: 100%
     & > div
         width: 100%
-        padding: 10px 0 10px 0  
+        padding: 5px 0  
 #product-list
     margin-top: 10px
     width: 100%
@@ -110,11 +130,13 @@
         tr
             td
                 border: none
+                text-align: center
                 &:first-child        
                     text-align: center
                 &:nth-of-type(2)
                     max-width: 200px
                     word-break: break-all
+                    text-align: left
                 button
                     border: 0
                     outline: 0

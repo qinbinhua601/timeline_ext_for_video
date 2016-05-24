@@ -4,7 +4,7 @@
  */
 
 var intvVideo = (function(){
-
+    var debug = false;
     // remove the base theme style
     window.VIDEOJS_NO_BASE_THEME = false;
 
@@ -102,12 +102,12 @@ var intvVideo = (function(){
             var currentMoment = parseInt(delta / myControlPanel.width() * duration);
 
             if (addMode) {
-                console.log('add mode is on [mouse move]');
+                debug && console.log('add mode is on [mouse move]');
                 if (isDragging) {
-                    console.log('startleft : ' + startLeft);
+                    debug && console.log('startleft : ' + startLeft);
 
-                    console.log('addMode currentMoment : ' + currentMoment);
-                    console.log('addMode delta : ' + delta);
+                    debug && console.log('addMode currentMoment : ' + currentMoment);
+                    debug && console.log('addMode delta : ' + delta);
 
                     if (lastMoment2 === currentMoment) {
                         return false;
@@ -117,16 +117,16 @@ var intvVideo = (function(){
 
                     drawRect(myActPin, currentActiveListId, startLeft, currentMoment);
 
-                    myProductInfo.find('.start > input.time').val(secondsToHms(startLeft > currentMoment ? currentMoment : startLeft));
-                    myProductInfo.find('.end > input.time').val(secondsToHms(parseInt(currentMoment > startLeft ? currentMoment : startLeft)));
+                    myProductInfo.find('.start input.time').val(secondsToHms(startLeft > currentMoment ? currentMoment : startLeft));
+                    myProductInfo.find('.end input.time').val(secondsToHms(parseInt(currentMoment > startLeft ? currentMoment : startLeft)));
 
                     myCurrentTimeTip.html(formatTimeTip(currentMoment, duration));
 
                 }
             } else {
 
-                console.log('lastMoment: ' + lastMoment);
-                console.log('currentMoment: ' + currentMoment);
+                debug && console.log('lastMoment: ' + lastMoment);
+                debug && console.log('currentMoment: ' + currentMoment);
 
                 if (currentMoment === lastMoment) {
                     return false;
@@ -145,7 +145,7 @@ var intvVideo = (function(){
             if (!player.paused()) return
 
             if (addMode) {
-                console.log('add mode is on [mouse leave]');
+                debug && console.log('add mode is on [mouse leave]');
             } else {
                 myFakePin.remove();
                 var currentTime = player.currentTime();
@@ -228,6 +228,13 @@ var intvVideo = (function(){
 
         });
 
+
+        myProductInfo.on('click', '.input-time > span', function(e) {
+            var isAdd = e.target.className === 'plus';
+            var $nodeInput = $(this).parent().find('input');
+            triggerKeyEvent($nodeInput, isAdd);
+        });
+
         // 更新当前添加的商品列表项
         $('#product-list').on('click', 'tbody > tr button', function(e) {
             
@@ -241,8 +248,8 @@ var intvVideo = (function(){
                 $('span.act-pin.active').removeClass('active');
                 $('#act-pin-' + currentActiveListId).addClass('active');
                 var item = getListItemById(currentActiveListId);
-                myProductInfo.find('.start > input.time').val(secondsToHms(item.startTime));
-                myProductInfo.find('.end > input.time').val(secondsToHms(item.endTime));
+                myProductInfo.find('.start input.time').val(secondsToHms(item.startTime));
+                myProductInfo.find('.end input.time').val(secondsToHms(item.endTime));
             }
             
             
@@ -254,7 +261,12 @@ var intvVideo = (function(){
             var h = Math.floor(d / 3600);
             var m = Math.floor(d % 3600 / 60);
             var s = Math.floor(d % 3600 % 60);
-            return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s);
+            
+            h = h < 10 ? ('0' + h) : h;
+            m = m < 10 ? ('0' + m) : m;
+            s = s < 10 ? ('0' + s) : s;
+            
+            return [h, m, s].join(':');
 
         }
 
@@ -278,16 +290,16 @@ var intvVideo = (function(){
 
             log('[add item] : ', addList);
 
-            myProductInfo.find('.start > input.time').val('')
-            myProductInfo.find('.end > input.time').val('')
+            myProductInfo.find('.start input.time').val('')
+            myProductInfo.find('.end input.time').val('')
 
         }
 
         var updateList = function() {
 
             var id = currentActiveListId;
-            var startTime = myProductInfo.find('.start > input.time').val();
-            var endTime = myProductInfo.find('.end > input.time').val();
+            var startTime = myProductInfo.find('.start input.time').val();
+            var endTime = myProductInfo.find('.end input.time').val();
             
             // update the 
             addList = $.map(addList, function (item, index) {
@@ -328,7 +340,7 @@ var intvVideo = (function(){
 
         var drawRect = function(dom, id, start, end) {
 
-            console.log(arguments)
+            debug && console.log(arguments)
 
             var leftStyle;
             var $node = dom || $('#act-pin-' + id);
@@ -345,8 +357,8 @@ var intvVideo = (function(){
         }
 
         var updateInput = function() {
-            var start = hmsToSeconds(myProductInfo.find('.start > input.time').val());
-            var end = hmsToSeconds(myProductInfo.find('.end > input.time').val());
+            var start = hmsToSeconds(myProductInfo.find('.start input.time').val());
+            var end = hmsToSeconds(myProductInfo.find('.end input.time').val());
 
             drawRect(null, currentActiveListId, start, end);
         }
@@ -360,7 +372,7 @@ var intvVideo = (function(){
         }
 
         var log = function(msg, list) {
-            console.log(msg);
+            debug && console.log(msg);
             console && console.table && console.table(list);
         }
         
@@ -391,6 +403,20 @@ var intvVideo = (function(){
             });
 
             return result.length ? result[0] : false
+        }
+        
+        var triggerKeyEvent = function(node, isAdd) {
+            var count = hmsToSeconds(node.val())
+            
+            if(isAdd) {
+                count++;
+                count = count > parseInt(duration) ? parseInt(duration) : count;
+            } else {
+                count--;
+                count = count > 0 ? count : 0;
+            }             
+
+            node.val(secondsToHms(count));
         }
     });
 })();
