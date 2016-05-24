@@ -7,31 +7,32 @@ var intvVideo = (function(){
     var debug = false;
     // remove the base theme style
     window.VIDEOJS_NO_BASE_THEME = false;
+    var myFakePin, myActPin, duration, myControlPanel, myPin, myCurrentTimeTip, myProductList, myProductInfo, lastCurrentTime, lastTimestamp, lastMoment, lastMoment2, addMode, addListCount, addList, currentActiveListId, isDragging, startLeft;
+
+    var secondsToHms, hmsToSeconds, addItem, updateList, removeFromList, drawRect, updateInput, getMaxId, formatTimeTip, log, updateProductList, getListItemById, triggerKeyEvent, getAddList;
 
     // init the video player instance
     var myPlayer = videojs('my-video', {
         bigPlayButton: true
     }, function () {
+        player = this,
+        myControlPanel = $('.control-panel'),
+        myPin = myControlPanel.find('span.current-time-pin'),
+        myCurrentTimeTip = $('.time-tip'),
+        myProductList = $('#product-list > tbody'),
+        myProductInfo = $('#product-info')
 
-        var myFakePin, myActPin, duration,
-            player = this,
-            myControlPanel = $('.control-panel'),
-            myPin = myControlPanel.find('span.current-time-pin'),
-            myCurrentTimeTip = $('.time-tip'),
-            myProductList = $('#product-list > tbody'),
-            myProductInfo = $('#product-info')
+        lastCurrentTime = 0,
+        lastTimestamp = 0,
+        lastMoment = 0,
+        lastMoment2 = 0,
 
-            lastCurrentTime = 0,
-            lastTimestamp = 0,
-            lastMoment = 0,
-            lastMoment2 = 0,
-
-            addMode = false,
-            addListCount = 0,
-            addList = [],
-            currentActiveListId = 0,
-            isDragging = false,
-            startLeft = 0;
+        addMode = false,
+        addListCount = 0,
+        addList = [],
+        currentActiveListId = 0,
+        isDragging = false,
+        startLeft = 0;
 
         player.on('loadedmetadata', function () {
             duration = player.duration();
@@ -60,8 +61,8 @@ var intvVideo = (function(){
             isDragging = true;
 
             startLeft = parseInt((e.clientX - myControlPanel.position().left) / myControlPanel.width() * duration);
-            
-            
+
+
             if ($.find('#act-pin-' + currentActiveListId).length) {
                 myActPin = $('#act-pin-' + currentActiveListId);
             } else {
@@ -141,7 +142,7 @@ var intvVideo = (function(){
         });
 
         myControlPanel.on('mouseleave', function (e) {
-            
+
             if (!player.paused()) return
 
             if (addMode) {
@@ -164,7 +165,7 @@ var intvVideo = (function(){
             }
 
         });
-        
+
         $(document.body).on('keyup', function (e) {
 
             if (e.shiftKey && e.keyCode === 27) { // SHIFT + ESC
@@ -178,7 +179,7 @@ var intvVideo = (function(){
 
         // 添加新商品
         myProductInfo.on('click', 'button.add', function() {
-            
+
             var id = getMaxId() + 1;
             currentActiveListId = id;
             addItem(id);
@@ -190,10 +191,10 @@ var intvVideo = (function(){
             var $node = $(this);
             updateList($node.parent());
         });
-        
+
         // 按键调整输入标签的值
         myProductInfo.on('keydown', 'input.time', function (e) {
-            
+
             var $inputNode = $(this),
                 count = hmsToSeconds($inputNode.val()),
                 weight = e.shiftKey ? 10 : 1;
@@ -235,9 +236,14 @@ var intvVideo = (function(){
             triggerKeyEvent($nodeInput, isAdd);
         });
 
+
+        myProductInfo.on('click', 'button.back', function() {
+            addMode = false;
+        });
+
         // 更新当前添加的商品列表项
         $('#product-list').on('click', 'tbody > tr button', function(e) {
-            
+
             var id = $(e.target).data('activeId');
 
             if(e.target.className === 'delete') {
@@ -251,172 +257,198 @@ var intvVideo = (function(){
                 myProductInfo.find('.start input.time').val(secondsToHms(item.startTime));
                 myProductInfo.find('.end input.time').val(secondsToHms(item.endTime));
             }
-            
-            
+
+
         });
+    });
 
-        var secondsToHms = function(d) {
+    secondsToHms = function(d) {
 
-            d = Number(d);
-            var h = Math.floor(d / 3600);
-            var m = Math.floor(d % 3600 / 60);
-            var s = Math.floor(d % 3600 % 60);
-            
-            h = h < 10 ? ('0' + h) : h;
-            m = m < 10 ? ('0' + m) : m;
-            s = s < 10 ? ('0' + s) : s;
-            
-            return [h, m, s].join(':');
+        d = Number(d);
+        var h = Math.floor(d / 3600);
+        var m = Math.floor(d % 3600 / 60);
+        var s = Math.floor(d % 3600 % 60);
 
+        h = h < 10 ? ('0' + h) : h;
+        m = m < 10 ? ('0' + m) : m;
+        s = s < 10 ? ('0' + s) : s;
+
+        return [h, m, s].join(':');
+
+    }
+
+    hmsToSeconds = function(s) {
+
+        s = s.trim();
+        var sum = 0;
+        var weightList = [1, 60, 3600];
+        var arr = s.split(':').reverse().forEach(function (item, index) { sum = sum + (+item * weightList[index]) });
+        return sum;
+
+    }
+
+    addItem = function(id) {
+
+        addList.push({
+            id: id,
+            startTime: '',
+            endTime: '',
+        })
+
+        log('[add item] : ', addList);
+
+        myProductInfo.find('.start input.time').val('')
+        myProductInfo.find('.end input.time').val('')
+
+    }
+
+    updateList = function() {
+
+        var id = currentActiveListId;
+        var startTime = myProductInfo.find('.start input.time').val();
+        var endTime = myProductInfo.find('.end input.time').val();
+
+        // update the
+        addList = $.map(addList, function (item, index) {
+            if (item.id == id) {
+                return {
+                    id: +id,
+                    startTime: hmsToSeconds(startTime),
+                    endTime: hmsToSeconds(endTime),
+                };
+            } else {
+                return item;
+            }
+        })
+
+        log('[add item to the list] : ', addList);
+
+        addMode = false;
+
+        updateProductList();
+
+    }
+
+    removeFromList = function(id) {
+
+        var $actPinNode = $('#act-pin-' + id);
+
+        // remove item from the addList by id
+        addList = $.grep(addList, function (item, index) { return item.id != id; });
+
+        // remove the node in .control-panel
+        $actPinNode.remove();
+
+        log('[remove item from the list] : ', addList);
+
+        updateProductList();
+
+    }
+
+    drawRect = function(dom, id, start, end) {
+
+        debug && console.log(arguments)
+
+        var leftStyle;
+
+        // 如果没有元素的话创建元素
+        if(!document.getElementById('act-pin-' + id)) {
+            $('<span id="act-pin-' + id + '" class="act-pin">'+ id +'</span>').appendTo(myControlPanel);
         }
+        var $node = dom || $('#act-pin-' + id);
 
-        var hmsToSeconds = function(s) {
+        console.log($node)
 
-            s = s.trim();
-            var sum = 0;
-            var weightList = [1, 60, 3600];
-            var arr = s.split(':').reverse().forEach(function (item, index) { sum = sum + (+item * weightList[index]) });
-            return sum;
+        // select from left to right [->] || right to left [<-]
+        leftStyle = (end > start) ? (start / duration * 100) : (end / duration * 100)
 
-        }
+        // re-adjust the position of the element
+        $node.css({
+            left: leftStyle + '%',
+            width: (Math.abs(end - start) / duration * myControlPanel.width()) + 'px'
+        })
 
-        var addItem = function(id) {
-            
-            addList.push({
-                id: id,
-                startTime: '',
-                endTime: '',
-            })
+    }
 
-            log('[add item] : ', addList);
+    updateInput = function() {
+        var start = hmsToSeconds(myProductInfo.find('.start input.time').val());
+        var end = hmsToSeconds(myProductInfo.find('.end input.time').val());
 
-            myProductInfo.find('.start input.time').val('')
-            myProductInfo.find('.end input.time').val('')
+        drawRect(null, currentActiveListId, start, end);
+    }
 
-        }
+    getMaxId = function() {
+        return addList.length ? (Math.max.apply(null, $.map(addList, function (item, index) { return Number(item.id) }))) : 0;
+    }
 
-        var updateList = function() {
+    formatTimeTip = function(now, overall) {
+        return secondsToHms(parseInt(now)) + ' / ' + secondsToHms(parseInt(overall));
+    }
 
-            var id = currentActiveListId;
-            var startTime = myProductInfo.find('.start input.time').val();
-            var endTime = myProductInfo.find('.end input.time').val();
-            
-            // update the 
-            addList = $.map(addList, function (item, index) {
-                if (item.id == id) {
-                    return {
-                        id: +id,
-                        startTime: hmsToSeconds(startTime),
-                        endTime: hmsToSeconds(endTime),
-                    };
-                } else {
-                    return item;
-                }
-            })
+    log = function(msg, list) {
+        debug && console.log(msg);
+        console && console.table && console.table(list);
+    }
 
-            log('[add item to the list] : ', addList);
+    updateProductList = function(force) {
+        var html = '';
+        force = (typeof force === undefined) ? false : force
+        for(var i = 0; i < addList.length; i++) {
+            var d = addList[i];
+            if(d.id) {
+                html += '<tr>'+ [
+                    d.id,
+                    '商品名称：' + d.id,
+                    '<img src="images/user-img.jpeg" height="30" width="30">',
+                    secondsToHms(d.startTime),
+                    secondsToHms(d.endTime),
+                    '<span class="now-price">'+ d.id * 100 +'</span>/' + '<span class="original-price">'+ d.id * 50 +'</span>',
+                    '<button class="update" data-active-id="'+ d.id +'">修改</button><button class="delete" data-active-id="'+ d.id +'">删除</button>'
+                ].map(function(item, index){return '<td>'+ item +'</td>'}).join() +'</tr>';
 
-            addMode = false;
-            
-            updateProductList();
-
-        }
-
-        var removeFromList = function(id) {
-
-            var $actPinNode = $('#act-pin-' + id);
-
-            // remove item from the addList by id
-            addList = $.grep(addList, function (item, index) { return item.id != id; });
-
-            // remove the node in .control-panel
-            $actPinNode.remove();
-
-            log('[remove item from the list] : ', addList);
-            
-            updateProductList();
-
-        }
-
-        var drawRect = function(dom, id, start, end) {
-
-            debug && console.log(arguments)
-
-            var leftStyle;
-            var $node = dom || $('#act-pin-' + id);
-
-            // select from left to right [->] || right to left [<-]
-            leftStyle = (end > start) ? (start / duration * 100) : (end / duration * 100)
-
-            // re-adjust the position of the element
-            $node.css({
-                left: leftStyle + '%',
-                width: (Math.abs(end - start) / duration * myControlPanel.width()) + 'px'
-            })
-
-        }
-
-        var updateInput = function() {
-            var start = hmsToSeconds(myProductInfo.find('.start input.time').val());
-            var end = hmsToSeconds(myProductInfo.find('.end input.time').val());
-
-            drawRect(null, currentActiveListId, start, end);
-        }
-
-        var getMaxId = function() {
-            return addList.length ? (Math.max.apply(null, $.map(addList, function (item, index) { return Number(item.id) }))) : 0;
-        }
-
-        var formatTimeTip = function(now, overall) {
-            return secondsToHms(parseInt(now)) + ' / ' + secondsToHms(parseInt(overall));
-        }
-
-        var log = function(msg, list) {
-            debug && console.log(msg);
-            console && console.table && console.table(list);
-        }
-        
-        var updateProductList = function() {
-            var html = '';
-
-            for(var i = 0; i < addList.length; i++) {
-                var d = addList[i];
-                if(d.id) {
-                    html += '<tr>'+ [
-                        d.id,
-                        '商品名称：' + d.id,
-                        '<img src="images/user-img.jpeg" height="30" width="30">',
-                        secondsToHms(d.startTime),
-                        secondsToHms(d.endTime),
-                        '<span class="now-price">'+ d.id * 100 +'</span>/' + '<span class="original-price">'+ d.id * 50 +'</span>',
-                        '<button class="update" data-active-id="'+ d.id +'">修改</button><button class="delete" data-active-id="'+ d.id +'">删除</button>'
-                    ].map(function(item, index){return '<td>'+ item +'</td>'}).join() +'</tr>';  
+                if(force) {
+                    drawRect(null, d.id, d.startTime, d.endTime)
                 }
             }
-
-            myProductList.html(html);
         }
 
-        var getListItemById = function(id) {
-            var result = addList.filter(function(item) {
-                return item.id == id
-            });
+        myProductList.html(html);
+    }
 
-            return result.length ? result[0] : false
-        }
-        
-        var triggerKeyEvent = function(node, isAdd) {
-            var count = hmsToSeconds(node.val())
-            
-            if(isAdd) {
-                count++;
-                count = count > parseInt(duration) ? parseInt(duration) : count;
-            } else {
-                count--;
-                count = count > 0 ? count : 0;
-            }             
+    getListItemById = function(id) {
+        var result = addList.filter(function(item) {
+            return item.id == id
+        });
 
-            node.val(secondsToHms(count));
+        return result.length ? result[0] : false
+    }
+
+    triggerKeyEvent = function(node, isAdd) {
+        var count = hmsToSeconds(node.val())
+
+        if(isAdd) {
+            count++;
+            count = count > parseInt(duration) ? parseInt(duration) : count;
+        } else {
+            count--;
+            count = count > 0 ? count : 0;
         }
-    });
+
+        node.val(secondsToHms(count));
+    }
+
+
+    getAddList = function() {
+        return addList;
+    }
+
+    setAddList = function(list) {
+        addList = list;
+    }
+
+    return {
+        getGoods: getAddList,
+        setGoods: setAddList,
+        updateProductList: updateProductList
+    }
 })();
