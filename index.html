@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    
+
     <div class="intv-video">
         <video id="my-video" class="video-js" controls preload="auto" width="640" height="264"
         poster="images/user-img.jpeg">
@@ -26,7 +26,7 @@
             <span class="current-time-pin"></span>
         </div>
         <div class="time-tip"></div>
-        
+
         <div class="help-layer" style="display: none;">
             <div class="wrapper">
                 <h2>帮助指南</h2>
@@ -51,15 +51,25 @@
                     <td>操作</td>
                 </tr>
             </thead>
-            
+
             <tbody>
-                
+
             </tbody>
         </table>
-        
+
         <div id="product-info">
             <div>
                 <button class="add"><span>+</span>添加商品</button>
+            </div>
+            <div class="basic-info">
+                <p class="title"></p>
+                <img src="" alt="" class="product-img">
+                <br>
+                <p>
+                    <span class="now-price"></span>
+                    /
+                    <span class="original-price"></span>
+                </p>
             </div>
             <div class="time-range">
                 <div class="start">
@@ -90,7 +100,7 @@
     </div>
   <script src="js/jquery-1.12.3.js"></script>
   <script src="js/videojs.js"></script>
-  
+
   <script src="js/intvvideo.js"></script>
 </body>
 </html>

@@ -5,19 +5,13 @@
 
 var intvVideo = (function(){
     var debug = false;
-
     // remove the base theme style
     window.VIDEOJS_NO_BASE_THEME = false;
-
-    // add start JUST APPEND one varible [resizeMode] to the declaration
-    var myFakePin, myActPin, duration, videoHeight, videoWidth, myControlPanel, myPin, myCurrentTimeTip, myProductList, myProductInfo, lastCurrentTime, lastTimestamp, lastMoment, lastMoment2, addMode, addListCount, currentActiveListId, isDragging, startLeft, myPlayer, resizeMode;
-    // add end
+    var myFakePin, myActPin, duration, myControlPanel, myPin, myCurrentTimeTip, myProductList, myProductInfo, lastCurrentTime, lastTimestamp, lastMoment, lastMoment2, addMode, addListCount, currentActiveListId, isDragging, startLeft, myPlayer, goodsSaveUrl, goodsDelUrl, resizeMode;
 
     addList = [];
 
-    // add start JUST APPEND one varible [updateProductInfo] to the declaration
     var secondsToHms, hmsToSeconds, addItem, updateList, removeFromList, drawRect, updateInput, getMaxId, formatTimeTip, log, updateProductList, getListItemById, triggerKeyEvent, getAddList, init, updateProductInfo;
-    // add end
 
     init = function() {
         // init the video player instance
@@ -45,13 +39,9 @@ var intvVideo = (function(){
             player.on('loadedmetadata', function () {
                 duration = player.duration();
 
-                // add start
                 player.play();
                 player.pause();
-                // add end
 
-                videoHeight = player.videoHeight();
-                videoWidth = player.videoWidth();
                 myCurrentTimeTip.html(formatTimeTip(0, duration));
 
 
@@ -74,16 +64,13 @@ var intvVideo = (function(){
 
                     if (!addMode) return
 
-                    // add start
                     var $node = $(e.target)
                     resizeMode = $node.is('.act-pin.active')
-                    // add end
 
                     isDragging = true;
 
                     startLeft = parseInt((e.clientX - myControlPanel.offset().left) / myControlPanel.width() * duration);
 
-                    // add start
                     if(resizeMode) {
                         var leftBorderPos = Number($node.css('left').replace(/px$/, ''))
                         var rightBorderPos = Number($node.css('width').replace(/px$/, '')) + leftBorderPos
@@ -101,8 +88,6 @@ var intvVideo = (function(){
                             console.log(startLeft)
                         }
                     }
-
-                    // add end
 
                     if ($.find('#act-pin-' + currentActiveListId).length) {
                         myActPin = $('#act-pin-' + currentActiveListId);
@@ -144,9 +129,7 @@ var intvVideo = (function(){
                     var currentMoment = parseInt(delta / myControlPanel.width() * duration);
 
                     if (addMode) {
-
                         debug && console.log('add mode is on [mouse move]');
-
                         if (isDragging) {
                             debug && console.log('startleft : ' + startLeft);
 
@@ -166,9 +149,8 @@ var intvVideo = (function(){
 
                             myCurrentTimeTip.html(formatTimeTip(currentMoment, duration));
 
-                            // add start
                             player.currentTime(currentMoment)
-                            // add end
+
                         }
                     } else {
 
@@ -222,16 +204,6 @@ var intvVideo = (function(){
                     }
 
                 });
-
-                // 添加新商品
-                myProductInfo.on('click', 'button.add', function() {
-
-                    var id = getMaxId() + 1;
-                    currentActiveListId = id;
-                    addItem(id);
-                    addMode = true;
-                });
-
                 // 保存当前编辑商品
                 myProductInfo.on('click', 'button.save', function(e) {
                     var $node = $(this);
@@ -249,20 +221,12 @@ var intvVideo = (function(){
                         count += weight;
                         count = count > parseInt(duration) ? parseInt(duration) : count;
                         $inputNode.val(secondsToHms(count));
-
-                        // add start
                         player.currentTime(count);
-                        // add end
-
                     } else if (e.keyCode === 40) { // down
                         count -= weight;
                         count = (count > 0) ? count : 0; // avoid negtive number
                         $inputNode.val(secondsToHms(count));
-
-                        // add start
                         player.currentTime(count);
-                        // add end
-
                     } else {
                         $inputNode.trigger('input');
                     }
@@ -310,12 +274,9 @@ var intvVideo = (function(){
                         $('span.act-pin.active').removeClass('active');
                         $('#act-pin-' + currentActiveListId).addClass('active');
                         var item = getListItemById(currentActiveListId);
-                        // add start
-                        // myProductInfo.find('.start input.time').val(secondsToHms(item.startTime));
-                        // myProductInfo.find('.end input.time').val(secondsToHms(item.endTime));
 
                         updateProductInfo(item);
-                        // add end
+
                     }
 
 
@@ -350,15 +311,21 @@ var intvVideo = (function(){
 
     }
 
-    addItem = function(id) {
+    addItem = function(goods) {
+        var id = getMaxId() + 1;
+        console.log('id: ' + id);
+        currentActiveListId = id;
 
         addList.push({
             id: id,
+            goodsId: goods.goodsId,
+            vgId: '',
+            price: goods.price,
+            salePrice: goods.salePrice,
+            goodTitle: goods.goodTitle,
+            imgSrc: goods.imgSrc,
             startTime: '',
             endTime: '',
-            goodsPrice: id * 50,
-            goodsSalePrice: id * 100,
-            goodsImgUrl: 'images/user-img.jpeg'
         })
 
         log('[add item] : ', addList);
@@ -366,10 +333,9 @@ var intvVideo = (function(){
         myProductInfo.find('.start input.time').val('')
         myProductInfo.find('.end input.time').val('')
 
-
-        // add start
         updateProductInfo(addList[addList.length - 1])
-        // add end
+
+        addMode = true;
 
     }
 
@@ -379,24 +345,50 @@ var intvVideo = (function(){
         var startTime = myProductInfo.find('.start input.time').val();
         var endTime = myProductInfo.find('.end input.time').val();
 
-        // update the
-        addList = $.map(addList, function (item, index) {
-            if (item.id == id) {
-                return {
-                    id: +id,
-                    startTime: hmsToSeconds(startTime),
-                    endTime: hmsToSeconds(endTime),
-                };
-            } else {
-                return item;
+        var goodItem = getListItemById(id);
+
+        var currentItem = {
+            id: +id,
+            goodsId : goodItem.goodsId,
+            vgId: goodItem.vgId,
+            price: goodItem.price,
+            salePrice: goodItem.salePrice,
+            goodTitle: goodItem.goodTitle,
+            imgSrc: goodItem.imgSrc,
+            startTime: hmsToSeconds(startTime),
+            endTime: hmsToSeconds(endTime),
+        }
+
+        // 添加/更新商品
+        $.ajax({
+            url: goodsSaveUrl,
+            type: 'post',
+            dataType: 'json',
+            data: {
+                item: JSON.stringify(currentItem)
+            },
+            success: function(json) {
+                console.log(json)
+                currentItem = json.data
+                console.log(currentItem)
+                // update the addList
+                addList = $.map(addList, function (item, index) {
+                    if (item.id == id) {
+                        return currentItem
+                    } else {
+                        return item;
+                    }
+                })
+                log('[add item to the list] : ', addList);
+
+                addMode = false;
+
+                updateProductList();
+            },
+            error: function(error) {
+                console.log(error)
             }
         })
-
-        log('[add item to the list] : ', addList);
-
-        addMode = false;
-
-        updateProductList();
 
     }
 
@@ -404,15 +396,35 @@ var intvVideo = (function(){
 
         var $actPinNode = $('#act-pin-' + id);
 
-        // remove item from the addList by id
-        addList = $.grep(addList, function (item, index) { return item.id != id; });
 
-        // remove the node in .control-panel
-        $actPinNode.remove();
+        art.dialog.confirm('你确认删除操作？', function(){
+            var currentItem = getListItemById(id)
 
-        log('[remove item from the list] : ', addList);
-
-        updateProductList();
+            // 删除商品
+            $.ajax({
+                url: goodsDelUrl,
+                type: 'post',
+                data: {
+                    item: JSON.stringify(currentItem)
+                },
+                success: function(json) {
+                    console.log(json)
+                    // remove item from the addList by id
+                    addList = $.grep(addList, function (item, index) {
+                        return item.id != id;
+                    });
+                    // remove the node in .control-panel
+                    $actPinNode.remove();
+                    log('[remove item from the list] : ', addList);
+                    updateProductList();
+                },
+                error: function(error) {
+                    console.log(error)
+                }
+            })
+        }, function(){
+            art.dialog.tips('你取消了操作');
+        });
 
     }
 
@@ -427,6 +439,8 @@ var intvVideo = (function(){
             $('<span id="act-pin-' + id + '" class="act-pin">'+ id +'</span>').appendTo(myControlPanel);
         }
         var $node = dom || $('#act-pin-' + id);
+
+        console.log($node)
 
         // select from left to right [->] || right to left [<-]
         leftStyle = (end > start) ? (start / duration * 100) : (end / duration * 100)
@@ -467,11 +481,11 @@ var intvVideo = (function(){
             if(d.id) {
                 html += '<tr>'+ [
                     d.id,
-                    '商品名称：' + d.id,
-                    '<img src="images/user-img.jpeg" height="30" width="30">',
+                    d.goodTitle,
+                    '<img src="'+d.imgSrc+'" height="30" width="30">',
                     secondsToHms(d.startTime),
                     secondsToHms(d.endTime),
-                    '<span class="now-price">'+ d.id * 100 +'</span>/' + '<span class="original-price">'+ d.id * 50 +'</span>',
+                    '<span class="now-price">'+ d.price +'</span>/' + '<span class="original-price">'+ d.salePrice +'</span>',
                     '<button class="update" data-active-id="'+ d.id +'">修改</button><button class="delete" data-active-id="'+ d.id +'">删除</button>'
                 ].map(function(item, index){return '<td>'+ item +'</td>'}).join() +'</tr>';
 
@@ -516,30 +530,28 @@ var intvVideo = (function(){
     }
 
 
-    getVideoInfo = function() {
-        return {
-            height: videoHeight,
-            width: videoWidth
-        }
+    setGoodsDelUrl = function(url) {
+        goodsDelUrl = url
     }
 
+    setGoodsSaveUrl = function(url) {
+        goodsSaveUrl = url
+    }
 
-    // add start
     updateProductInfo = function(goods) {
-        myProductInfo.find('.basic-info .title').text(goods['goodsTitle'])
-        myProductInfo.find('.basic-info > img').text(goods['goodsImgUrl'])
-        myProductInfo.find('.basic-info span.now-price').text(goods['goodsPrice'])
-        myProductInfo.find('.basic-info span.original-price').text(goods['goodsSalePrice'])
+        myProductInfo.find('.basic-info .title').text(goods['goodTitle'])
+        myProductInfo.find('.basic-info > img').attr('src', goods['imgSrc'])
+        myProductInfo.find('.basic-info span.now-price').text(goods['price'])
+        myProductInfo.find('.basic-info span.original-price').text(goods['salePrice'])
     }
-    // add end
 
     return {
         init: init,
         getGoods: getAddList,
         setGoods: setAddList,
         updateProductList: updateProductList,
-        getVideoInfo: getVideoInfo
+        addItem: addItem,
+        setGoodsDelUrl: setGoodsDelUrl,
+        setGoodsSaveUrl: setGoodsSaveUrl
     }
 })();
-
-intvVideo.init()

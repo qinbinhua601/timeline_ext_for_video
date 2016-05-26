@@ -1,0 +1,22 @@
+<html>
+<head>
+  <link href="css/video-js.css" rel="stylesheet">
+
+  <!-- If you'd like to support IE8 -->
+  <script src="js/videojs-ie8.min.js"></script>
+  <link rel="stylesheet" href="css/intvvideo.css">
+  <title>视频互动列表</title>
+</head>
+
+<body>
+
+  <script src="js/jquery-1.12.3.js"></script>
+  <script src="js/videojs.js"></script>
+  <script src="js/videoUtil.js"></script>
+  <script>
+        videoUtil.getVideoInfo('https://test-intv-vod-output.oss-cn-hangzhou.aliyuncs.com/output/mp4/36f70653b09b4ac88362c760cc88926a/Robotica_720.mp4', function(data){
+            console.log(data)
+        });
+  </script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-* 
+*
     box-sizing: border-box
 .intv-video
     position: relative
@@ -17,9 +17,9 @@
     z-index: 1
     .wrapper
         height: 80%
-        width: 60%  
+        width: 60%
         border: 1px solid sandybrown
-        background-color: sandybrown 
+        background-color: sandybrown
         border-radius: 12px
         h2
             text-align: center
@@ -28,14 +28,14 @@
         list-style-type: decimal
         line-height: 1.5
         font-size: 110%
-        
-.video-js 
+
+.video-js
     .vjs-big-play-button
         position: absolute
         left: 50%
         top: 50%
         margin-left: -1.5em
-        margin-top: -.75em      
+        margin-top: -.75em
 
 .control-panel
     position: relative
@@ -58,8 +58,9 @@
             width: 2px
             text-align: center
             line-height: 120px
-            &.active 
+            &.active
                 background-color: yellowgreen
+                cursor: ew-resize
 .time-tip
     margin-top: 10px
     width: 640px
@@ -71,6 +72,30 @@
     position: absolute
     top: 0
     right: 20px
+    .basic-info
+        padding: 5px 10px
+        margin: 0
+        border: 1px dashed #ccc
+        text-align: center
+        & > img
+            height: 100px
+            width: 100px
+        p
+            margin: 0
+            line-height: 24px
+            &.title
+                font-size: 18px
+        & > p > span
+            vertical-align: middle
+            &:before
+                content: '¥'
+            &.now-price
+                font-size: 18px
+                font-weight: bolder
+            &.original-price
+                text-decoration: line-through
+                color: #b3b3b3
+                font-size: 14px
     button
         padding: 10px
         border: 0
@@ -115,7 +140,7 @@
                     height: 100%
     & > div
         width: 100%
-        padding: 5px 0  
+        padding: 5px 0
 #product-list
     margin-top: 10px
     width: 100%
@@ -131,7 +156,7 @@
             td
                 border: none
                 text-align: center
-                &:first-child        
+                &:first-child
                     text-align: center
                 &:nth-of-type(2)
                     max-width: 200px
@@ -156,4 +181,3 @@
                         text-decoration: line-through
                         color: #b3b3b3
                         font-size: 14px
-                    
