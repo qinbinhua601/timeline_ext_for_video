@@ -97,6 +97,7 @@ var intvVideo = (function(){
                         } else if( (rightBorderPos - (e.clientX - myControlPanel.offset().left)) < 30 ) { //右边界
                             $node.css('cursor', 'ew-resize')
                             startLeft = parseInt((leftBorderPos / myControlPanel.width()) * duration)
+                            startLeft = startLeft ? startLeft + 1 : 0
                             console.log('------')
                             console.log(startLeft)
                         }
